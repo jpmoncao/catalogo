@@ -24,6 +24,9 @@
                     <a class="nav-link" th:href="@{/produtos}">Produtos</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/produtos/auditoria}">Auditoria</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:href="@{/categorias/novo}">Nova Categoria</a>
                 </li>
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
@@ -55,6 +58,11 @@
             <a href="/produtos/novo" class="btn btn-success" sec:authorize="hasRole('ADMIN')">Novo Produto</a>
         </div>
         <div class="card-body">
+
+            <div th:if="${sucesso}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${sucesso}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
 
             <form th:action="@{/produtos}" method="get" class="mb-4">
                 <div class="row g-2">
@@ -94,7 +102,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Nome</th>
-                    <th>Categoria</th> <th>Preço (R$)</th>
+                    <th>Categoria</th>
+                    <th>Preço (R$)</th>
+                    <th>Quantidade</th>
                     <th class="text-center" sec:authorize="hasRole('ADMIN')">Ações</th>
                 </tr>
                 </thead>
@@ -106,6 +116,7 @@
                     <td th:text="${#numbers.formatDecimal(p.valor, 1, 'POINT', 2, 'COMMA')}"
                         th:classappend="${p.valor > 10000} ? 'text-danger fw-bold' : ''">
                     </td>
+                    <td th:text="${p.quantidade}"></td>
                     <td class="text-center" sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/produtos/editar/{id}(id=${p.idProduto})}"
                            class="btn btn-sm btn-warning">Editar</a>

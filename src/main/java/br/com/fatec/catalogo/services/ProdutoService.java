@@ -33,9 +33,16 @@ public class ProdutoService {
         return repository.findByCategoriaIdCategoria(idCategoria);
     }
 
+    public List<ProdutoModel> listarPorDataAtualizacao() {
+        return repository.findAllByOrderByDataCadastroDesc();
+    }
+
     // Resolve o Desafio 2
     @Transactional
     public void salvar(ProdutoModel produto) {
+        if (produto.getQuantidade() < 0) {
+            throw new IllegalArgumentException("A quantidade não pode ser negativa.");
+        }
         // Regra: Não permitir duplicidade de nome em novos registros
         if (produto.getIdProduto() == 0 && repository.existsByNome(produto.getNome())) {
             throw new RuntimeException("Já existe um produto com este nome.");

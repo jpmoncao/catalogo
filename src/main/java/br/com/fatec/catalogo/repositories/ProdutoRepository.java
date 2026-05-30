@@ -13,4 +13,6 @@ public interface ProdutoRepository extends JpaRepository<ProdutoModel, Long> {
     boolean existsByNome(String nome);
 
     List<ProdutoModel> findByCategoriaIdCategoria(Long idCategoria);
+
+    List<ProdutoModel> findAllByOrderByDataCadastroDesc();
 }

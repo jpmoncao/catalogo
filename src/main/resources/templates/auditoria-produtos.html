@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria de Produtos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/produtos">FATEC Catálogo</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/produtos}">Produtos</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link active" th:href="@{/produtos/auditoria}">Auditoria</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/categorias/novo}">Nova Categoria</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/usuarios/novo}">Novo usuário</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center">
+                <span class="navbar-text text-white me-3" sec:authorize="isAuthenticated()">
+                    Olá, <strong sec:authentication="name">Usuário</strong>
+                </span>
+
+                <form th:action="@{/logout}" method="post" sec:authorize="isAuthenticated()">
+                    <button type="submit" class="btn btn-light btn-sm text-primary fw-bold">Sair</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Auditoria de Produtos</h2>
+            <a th:href="@{/produtos}" class="btn btn-secondary">Voltar à Listagem</a>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-4">
+                Produtos ordenados pela data de atualização mais recente.
+                Itens com estoque abaixo de 5 unidades são destacados.
+            </p>
+
+            <table class="table table-hover">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Preço (R$)</th>
+                    <th>Quantidade</th>
+                    <th>Última Atualização</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="p : ${produtos}"
+                    th:classappend="${p.quantidade < 5} ? 'table-warning' : ''">
+                    <td th:text="${p.idProduto}"></td>
+                    <td>
+                        <span th:text="${p.nome}"></span>
+                        <span th:if="${p.quantidade < 5}" class="badge bg-warning text-dark ms-1">Estoque baixo</span>
+                    </td>
+                    <td th:text="${p.categoria != null ? p.categoria.nome : 'Sem Categoria'}"></td>
+                    <td th:text="${#numbers.formatDecimal(p.valor, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <td th:text="${p.quantidade}"
+                        th:classappend="${p.quantidade < 5} ? 'fw-bold text-danger' : ''"></td>
+                    <td th:text="${p.dataCadastro != null ? #temporals.format(p.dataCadastro, 'dd/MM/yyyy HH:mm:ss') : '-'}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${#lists.isEmpty(produtos)}" class="alert alert-info text-center">
+                Nenhum produto cadastrado para auditoria.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
